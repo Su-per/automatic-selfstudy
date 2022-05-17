@@ -23,7 +23,7 @@ class Register(BaseModel):
 
 @app.on_event("startup")
 async def startup():
-    t = BackgroundApply(db=db, hour=14, minute=22)
+    t = BackgroundApply(db=db, hour=20, minute=0)
     t.start()
 
 
