@@ -1,8 +1,8 @@
 from threading import Thread
+from datetime import datetime
 from config import header, APPLY_URL
 import aiohttp
 import asyncio
-from datetime import datetime
 import json
 
 
@@ -17,8 +17,16 @@ class BackgroundApply(Thread):
         self.minute = minute
         super().__init__()
 
-    async def request_apply(self, arr):
-        pass
+    async def request_apply(self, dict):
+        for _ in range(10):
+            async with aiohttp.ClientSession() as session:
+                header["authorization"] = dict["access_token"]
+                async with session.put(APPLY_URL, headers=header) as response:
+                    res = json.loads(await response.text())
+                    if "success" in res:
+                        print(f"{dict['email']} 성공")
+                        return
+        print(f"{dict['email']} 실패")
 
     def apply(self):
         if len(self.db) == 0:
