@@ -48,11 +48,6 @@ async def get_user_list():
     return list(map(lambda x: x["email"], db))
 
 
-@app.get("/dbt")
-async def get_dbt():
-    return db
-
-
 @app.on_event("startup")
 async def startup():
     t = BackgroundApply(db=db, hour=20, minute=00)
