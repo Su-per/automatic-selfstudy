@@ -37,7 +37,6 @@ async def register(req: Register):
         {
             "email": req.email,
             "access_token": res.json()["data"]["token"]["accessToken"],
-            "pw": req.password,
         }
     )
     return {"message": "Success"}
