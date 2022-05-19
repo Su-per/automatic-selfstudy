@@ -18,15 +18,7 @@ class BackgroundApply(Thread):
         super().__init__()
 
     async def request_apply(self, arr):
-        count = 0
-        for i in range(10):
-            async with aiohttp.ClientSession() as session:
-                async with session.put(APPLY_URL, headers=header) as response:
-                    res = json.loads(await response.text())
-                    if "success" in res:
-                        print(f"{arr['email']} 성공 {res['timeStamp']}")
-                        return
-        print(f"{arr['email']} 실패")
+        pass
 
     def apply(self):
         if len(self.db) == 0:
