@@ -1,5 +1,6 @@
 from threading import Thread
 from datetime import datetime
+from random import randint
 from config import header, APPLY_URL
 import aiohttp
 import asyncio
@@ -18,6 +19,7 @@ class BackgroundApply(Thread):
         super().__init__()
 
     async def request_apply(self, dict):
+        await asyncio.sleep(0.1 * randint(1, 10))
         for _ in range(10):
             async with aiohttp.ClientSession() as session:
                 header["authorization"] = dict["access_token"]
