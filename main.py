@@ -23,8 +23,10 @@ class Register(BaseModel):
 
 
 @app.post("/register")
-async def register(req: Register):
-    if req.email in map(lambda x: x["email"], db):
+async def register(apply_type: str, req: Register):
+    if not apply_type in ["selfstudy", "massage"]:
+        return {"message": "Invalid apply type"}
+    if req.email in [i["email"] for i in db if i["apply_type"] == apply_type]:
         return {"message": "Already applied"}
 
     data = {"email": req.email, "password": req.password}
@@ -37,19 +39,24 @@ async def register(req: Register):
         {
             "email": req.email,
             "access_token": res.json()["data"]["token"]["accessToken"],
+            "pw": req.password,
+            "apply_type": apply_type,
         }
     )
     return {"message": "Success"}
 
 
-@app.get("/list/applicant")
-async def get_user_list():
-    return list(map(lambda x: x["email"], db))
+@app.get("/list")
+async def get_user_list(apply_type: str):
+    if apply_type == "selfstudy":
+        return [i["email"] for i in db if i["apply_type"] == "selfstudy"]
+    elif apply_type == "massage":
+        return [i["email"] for i in db if i["apply_type"] == "massage"]
 
 
 @app.on_event("startup")
 async def startup():
-    t = BackgroundApply(db=db, hour=20, minute=00)
+    t = BackgroundApply(db=db, selfstudy_time=(20, 0), massage_time=(20, 20))
     t.start()
 
 
