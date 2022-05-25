@@ -19,23 +19,7 @@ class BackgroundApply(Thread):
         super().__init__()
 
     async def request_apply(self, dict, apply_type):
-        await asyncio.sleep(0.1 * randint(1, 10))
-
-        if apply_type == "selfstudy":
-            url = SELFSTUDY_APPLY_URL
-        elif apply_type == "massage":
-            url = MASSAGE_APPLY_URL
-
-        for _ in range(10):
-            async with aiohttp.ClientSession() as session:
-                header["authorization"] = dict["access_token"]
-                async with session.put(url=url, headers=header) as response:
-                    res = json.loads(await response.text())
-                    if "success" in res:
-                        print(f"{dict['email']} 성공")
-                        return
-        print(f"{dict['email']} 실패")
-        print(res)
+        pass 
 
     def apply(self, apply_type):
         if len([i for i in self.db if i["apply_type"] == apply_type]) == 0:
