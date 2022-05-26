@@ -9,34 +9,29 @@ import json
 
 class BackgroundApply(Thread):
     db = []
-    selfstudy_time = (0, 0)
-    massage_time = (0, 0)
+    time = (0, 0)
 
-    def __init__(self, db, selfstudy_time, massage_time):
+    def __init__(self, db, time, apply_type):
         self.db = db
-        self.selfstudy_time = selfstudy_time
-        self.massage_time = massage_time
+        self.time = time
+        self.apply_type = apply_type
         super().__init__()
 
-    async def request_apply(self, dict, apply_type):
-        pass 
+    async def request_apply(self, dict):
+        pass
 
-    def apply(self, apply_type):
-        if len([i for i in self.db if i["apply_type"] == apply_type]) == 0:
+    def apply(self):
+        if len([i for i in self.db if i["apply_type"] == self.apply_type]) == 0:
             return
         tasks = [
-            self.request_apply(i, apply_type)
-            for i in [i for i in self.db if i["apply_type"] == apply_type]
+            self.request_apply(i)
+            for i in [i for i in self.db if i["apply_type"] == self.apply_type]
         ]
         asyncio.run(asyncio.wait(tasks))
 
     def run(self):
-        do_selfstudy, do_massage = False, False
         while True:
             dt = datetime.now()
-            if (dt.hour, dt.minute) == self.selfstudy_time and do_selfstudy == False:
-                self.apply(apply_type="selfstudy")
-                do_selfstudy = True
-            elif (dt.hour, dt.minute) == self.massage_time and do_massage == False:
-                self.apply(apply_type="massage")
-                do_massage = True
+            if (dt.hour, dt.minute) == self.time:
+                self.apply()
+                break
