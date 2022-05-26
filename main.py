@@ -24,8 +24,7 @@ class Register(BaseModel):
 
 @app.post("/register")
 async def register(apply_type: str, req: Register):
-    if not apply_type in ["selfstudy", "massage"]:
-        return {"message": "Invalid apply type"}
+
     if req.email in [i["email"] for i in db if i["apply_type"] == apply_type]:
         return {"message": "Already applied"}
 
@@ -39,7 +38,6 @@ async def register(apply_type: str, req: Register):
         {
             "email": req.email,
             "access_token": res.json()["data"]["token"]["accessToken"],
-            "pw": req.password,
             "apply_type": apply_type,
         }
     )
@@ -56,8 +54,10 @@ async def get_user_list(apply_type: str):
 
 @app.on_event("startup")
 async def startup():
-    t = BackgroundApply(db=db, selfstudy_time=(20, 0), massage_time=(20, 20))
-    t.start()
+    selfstudy_thread = BackgroundApply(db=db, time=(17, 8), apply_type="selfstudy")
+    massage_thread = BackgroundApply(db=db, time=(17, 9), apply_type="massage")
+    selfstudy_thread.start()
+    massage_thread.start()
 
 
 if __name__ == "__main__":
