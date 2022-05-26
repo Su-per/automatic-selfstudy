@@ -54,8 +54,10 @@ async def get_user_list(apply_type: str):
 
 @app.on_event("startup")
 async def startup():
-    selfstudy_thread = BackgroundApply(db=db, time=(17, 8), apply_type="selfstudy")
-    massage_thread = BackgroundApply(db=db, time=(17, 9), apply_type="massage")
+    selfstudy_thread = BackgroundApply(
+        db=db, apply_time=(20, 8), apply_type="selfstudy"
+    )
+    massage_thread = BackgroundApply(db=db, apply_time=(20, 20), apply_type="massage")
     selfstudy_thread.start()
     massage_thread.start()
 
