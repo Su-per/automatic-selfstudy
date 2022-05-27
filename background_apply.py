@@ -1,14 +1,15 @@
 from threading import Thread
 from datetime import datetime
-from config import header, SELFSTUDY_APPLY_URL, MASSAGE_APPLY_URL
+from config import header, APPLY_URL
 import aiohttp
 import asyncio
 import json
 
 
 class BackgroundApply(Thread):
-    db = []
-    apply_time = (0, 0)
+    db: list
+    apply_time: tuple
+    apply_type: str
 
     def __init__(self, db, apply_time, apply_type):
         self.db = db
@@ -17,15 +18,11 @@ class BackgroundApply(Thread):
         super().__init__()
 
     async def request_apply(self, dict):
-
-        if self.apply_type == "selfstudy":
-            url = SELFSTUDY_APPLY_URL
-        elif self.apply_type == "massage":
-            url = MASSAGE_APPLY_URL
+        url = APPLY_URL[self.apply_type]
+        header["authorization"] = dict["access_token"]
 
         for _ in range(10):
             async with aiohttp.ClientSession() as session:
-                header["authorization"] = dict["access_token"]
                 async with session.put(url=url, headers=header) as response:
                     res = json.loads(await response.text())
                     if "success" in res:
@@ -43,7 +40,6 @@ class BackgroundApply(Thread):
     def run(self):
         while True:
             dt = datetime.now()
-            print(self.apply_type)
             if (dt.hour, dt.minute) == self.apply_time:
                 self.apply()
                 break
